@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Notebook</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .note {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .note-title {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Simple Notebook</h1>
+    <h2>Create a new note</h2>
+    <form id="noteForm">
+        <label for="title">Title:</label><br>
+        <input type="text" id="title" name="title" required><br><br>
+        <label for="content">Content:</label><br>
+        <textarea id="content" name="content" rows="4" required></textarea><br><br>
+        <button type="submit">Add Note</button>
+    </form>
+
+    <h2>All Notes</h2>
+    <div id="notesContainer">
+        <!-- Notes will be displayed here -->
+    </div>
+
+    <script>
+        document.getElementById('noteForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const title = document.getElementById('title').value;
+            const content = document.getElementById('content').value;
+
+            fetch('/notes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ title: title, content: content })
+            }).then(response => {
+                if (response.ok) {
+                    alert('Note added successfully!');
+                    loadNotes();
+                } else {
+                    alert('Failed to add note.');
+                }
+            });
+        });
+
+        function loadNotes() {
+            fetch('/allnotes')
+            .then(response => response.json())
+            .then(notes => {
+                const container = document.getElementById('notesContainer');
+                container.innerHTML = '';
+                notes.forEach(note => {
+                    const noteElement = document.createElement('div');
+                    noteElement.className = 'note';
+                    noteElement.innerHTML = `<div class="note-title">${note.title}</div><div>${note.content}</div>`;
+                    container.appendChild(noteElement);
+                });
+            });
+        }
+
+        // Load notes when the page loads
+        window.onload = loadNotes;
+    </script>
+</body>
+</html>
