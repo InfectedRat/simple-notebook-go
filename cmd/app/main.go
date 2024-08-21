@@ -23,6 +23,7 @@ func main() {
 	}
 
 	http.HandleFunc("/notes", transport.NoteHandler(db))
+	http.HandleFunc("/getnotes", transport.GetAllNotesHandler(db))
 	fmt.Println("Сервер запущен на порту 8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 
