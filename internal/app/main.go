@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+
+	models "simple-notebook-go/internal/models"
 )
 
 func CreateNote(db *sql.DB, title, content string) {
@@ -13,4 +15,23 @@ func CreateNote(db *sql.DB, title, content string) {
 		log.Fatalf("Запрос завершился ошибкой: %v", err)
 	}
 	fmt.Println("Заметка успешно создана!")
+}
+
+func GetNote(db *sql.DB) []models.Note {
+	rows, err := db.Query("SELECT id, title, content FROM notes")
+	if err != nil {
+		log.Fatalf("Ошибка выполнения запроса: %v", err)
+	}
+	defer rows.Close()
+
+	var notes []models.Note
+	for rows.Next() {
+		var note models.Note
+		err := rows.Scan(&note.ID, &note.Title, &note.Content)
+		if err != nil {
+			log.Fatalf("Ошибка при чтении заметки: %v", err)
+		}
+		notes = append(notes, note)
+	}
+	return notes
 }
