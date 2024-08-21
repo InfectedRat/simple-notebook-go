@@ -8,13 +8,14 @@ import (
 	models "simple-notebook-go/internal/models"
 )
 
-func CreateNote(db *sql.DB, title, content string) {
+func CreateNote(db *sql.DB, title, content string) error {
 	query := `INSERT INTO notes (title, content) VALUES (?, ?)`
 	_, err := db.Exec(query, title, content)
 	if err != nil {
-		log.Fatalf("Запрос завершился ошибкой: %v", err)
+		fmt.Errorf("Запрос завершился ошибкой: %v", err)
 	}
 	fmt.Println("Заметка успешно создана!")
+	return nil
 }
 
 func GetNote(db *sql.DB) []models.Note {
